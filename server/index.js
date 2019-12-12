@@ -1,14 +1,23 @@
 import React from 'react'
 import {renderToString} from "react-dom/server"
 import express from 'express'
+import {StaticRouter} from 'react-router-dom'
+import {Provider} from 'react-redux'
+import store from '../src/store/store'
 import App from '../src/App'
 
 const app = express()
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-  // const Page = <App title="react ssr"></App>
-  const content = renderToString(App)
+app.get('*', (req, res) => {
+  // 把react组件解析成html
+  const content = renderToString(
+    <Provider store={store}>
+      <StaticRouter location={req.url}>
+        {App}
+      </StaticRouter>
+    </Provider>
+  )
   res.send(`
     <html>
       <head>
